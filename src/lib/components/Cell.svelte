@@ -2,7 +2,7 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as HoverCard from '$lib/components/ui/hover-card';
-	// import Notes from './Notes.svelte';
+	import Notes from './Notes.svelte';
 	import { formatRFC7231, add } from 'date-fns';
 
 	export let canCheck = true;
@@ -37,6 +37,6 @@
 		{#if canCheck}
 			<Checkbox bind:checked={isChecked} />
 		{/if}
-		<!-- <Notes /> -->
+		<Notes />
 	</Sheet.Content>
 </Sheet.Root>
