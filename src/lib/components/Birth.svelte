@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import { Progress } from './ui/progress';
 	export let data: SuperValidated<Infer<FormSchema>>;
+	export let dob: string = '';
 
 	let progressValue = 5;
 	onMount(() => {
@@ -61,6 +62,7 @@
 	let value: DateValue | undefined;
 
 	$: value = $formData.dob ? parseDate($formData.dob) : undefined;
+	dob = $formData.dob;
 
 	let placeholder: DateValue = today(getLocalTimeZone());
 </script>

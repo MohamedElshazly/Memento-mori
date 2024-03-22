@@ -9,6 +9,9 @@
 	export let isChecked = canCheck ? false : true;
 	export let week: number;
 	const currentDate = formatRFC7231(add(new Date(1999, 4, 1), { weeks: week }));
+	{
+		//refactor this to get its state from BE
+	}
 </script>
 
 <Sheet.Root>

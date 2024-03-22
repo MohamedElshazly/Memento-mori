@@ -4,15 +4,13 @@
 	import { onMount } from 'svelte';
 	import Button from '@/components/ui/button/button.svelte';
 	import Birth from '@/components/Birth.svelte';
-	const noOfWeeks = 3840;
-	const DOB = new Date(1999, 4, 1);
-	const noWeeksSinceDOB = differenceInWeeks(new Date(), DOB);
-	const currentWeek = Array(noOfWeeks).fill(0)[noWeeksSinceDOB - 1];
-	const canCheck = (week: number) => week >= currentWeek;
 	export let data;
-
-	let { supabase, calendarStatus } = data;
+	let { supabase, calendarStatus, weeks } = data;
 	$: ({ supabase, calendarStatus } = data);
+	const noOfWeeks = 3840;
+
+	const noWeeksSinceDOB = weeks.length;
+	console.log('weeks :>> ', weeks);
 </script>
 
 {#if calendarStatus}
@@ -27,9 +25,9 @@
 		<div class="grid gap-2" style="grid-template-columns: repeat(24, minmax(0, 1fr));">
 			{#each Array(noOfWeeks) as _, i}
 				{#if i < noWeeksSinceDOB}
-					<Cell week={i + 1} canCheck={false} />
+					<Cell week={i + 1} canCheck={weeks[i].can_check} />
 				{:else}
-					<Cell week={i + 1} canCheck={canCheck(i + 1)} />
+					<Cell week={i + 1} canCheck={true} />
 				{/if}
 			{/each}
 		</div>
