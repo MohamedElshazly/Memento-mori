@@ -3,19 +3,23 @@ import { fail, type Actions } from '@sveltejs/kit';
 import { differenceInWeeks } from 'date-fns';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
+import type { Profile, Weeks } from '../global.types.js';
+import type { PageServerLoad } from './$types.js';
 
-export const load = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = locals;
 	const session = await locals.getSession();
 
 	const { data: profileData, error } = await supabase
 		.from('profiles')
-		.select('calendar_initialized, dob');
+		.select('calendar_initialized, dob')
+		.returns<Profile[]>();
 
 	const { data: weeksData, error: weeksError } = await supabase
 		.from('weeks')
 		.select('week_id, status, can_check')
-		.eq('user_id', session?.user?.id);
+		.eq('user_id', session?.user?.id)
+		.returns<Weeks[]>();
 
 	if (error) {
 		console.error('error', error);
