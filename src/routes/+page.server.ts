@@ -19,6 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from('weeks')
 		.select('week_id, status')
 		.eq('user_id', session?.user?.id)
+		.order('week_id', { ascending: true })
 		.returns<Weeks[]>();
 
 	if (error) {

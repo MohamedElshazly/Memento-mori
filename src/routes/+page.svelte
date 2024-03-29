@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { differenceInWeeks } from 'date-fns';
 	import Cell from '@/components/Cell.svelte';
-	import { onMount } from 'svelte';
-	import Button from '@/components/ui/button/button.svelte';
 	import Birth from '@/components/Birth.svelte';
 	export let data;
-	let { supabase, calendarStatus, weeks } = data;
-	$: ({ supabase, calendarStatus } = data);
-	const noOfWeeks = 3840;
+	let { supabase, calendarStatus, weeks, session, currentWeek } = data;
+	$: ({ supabase, calendarStatus, weeks, session, currentWeek } = data);
 
-	const noWeeksSinceDOB = weeks.length;
-	console.log('weeks :>> ', weeks);
+	const noOfWeeks = 3840;
+	const noWeeksSinceDOB = weeks?.length || 0;
+
+	const onCheck = async (week_id: number) => {
+		if (!session) return;
+		await supabase.from('weeks').insert([{ week_id, status: 'checked', user_id: session.user.id }]);
+	};
 </script>
 
 {#if calendarStatus}
@@ -25,9 +26,9 @@
 		<div class="grid gap-2" style="grid-template-columns: repeat(24, minmax(0, 1fr));">
 			{#each Array(noOfWeeks) as _, i}
 				{#if i < noWeeksSinceDOB}
-					<Cell week={i + 1} canCheck={weeks[i].can_check} />
+					<Cell week={weeks?.[i]} {currentWeek} />
 				{:else}
-					<Cell week={i + 1} canCheck={true} />
+					<Cell idx={i + 1} {currentWeek} handleCheck={(id) => onCheck(id)} />
 				{/if}
 			{/each}
 		</div>

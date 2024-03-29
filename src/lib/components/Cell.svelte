@@ -4,14 +4,17 @@
 	import * as HoverCard from '$lib/components/ui/hover-card';
 	import Notes from './Notes.svelte';
 	import { formatRFC7231, add } from 'date-fns';
+	import type { Weeks } from '../../global.types';
+	import { toNumber } from 'lodash-es';
 
-	export let canCheck = true;
-	export let isChecked = canCheck ? false : true;
-	export let week: number;
-	const currentDate = formatRFC7231(add(new Date(1999, 4, 1), { weeks: week }));
-	{
-		//refactor this to get its state from BE
-	}
+	export let week: Weeks | undefined = undefined;
+	export let idx: number | undefined = undefined;
+	export let currentWeek: number;
+	export let handleCheck: (id: number) => Promise<void> = async () => {};
+
+	const isChecked = week?.status === 'checked' ? true : false;
+	const canCheck = week ? week.week_id === currentWeek : idx === currentWeek;
+	const currentDate = formatRFC7231(add(new Date(1999, 4, 1), { weeks: idx }));
 </script>
 
 <Sheet.Root>
@@ -19,7 +22,7 @@
 		<HoverCard.Root>
 			<HoverCard.Trigger
 				><Checkbox
-					id={`${week}`}
+					id={`${idx}`}
 					checked={isChecked}
 					on:click={(e) => {
 						e.preventDefault();
@@ -32,13 +35,13 @@
 	</Sheet.Trigger>
 	<Sheet.Content>
 		<Sheet.Header>
-			<Sheet.Title>Week {week}</Sheet.Title>
+			<Sheet.Title>Week {week?.week_id || idx}</Sheet.Title>
 			<Sheet.Description>
 				You can check this week here, and add notable events, or any notes you want to remember.
 			</Sheet.Description>
 		</Sheet.Header>
 		{#if canCheck}
-			<Checkbox bind:checked={isChecked} />
+			<Checkbox on:click={() => handleCheck(toNumber(idx))} />
 		{/if}
 		<Notes />
 	</Sheet.Content>
