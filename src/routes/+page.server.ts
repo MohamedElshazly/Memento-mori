@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: weeksData, error: weeksError } = await supabase
 		.from('weeks')
-		.select('week_id, status, can_check')
+		.select('week_id, status')
 		.eq('user_id', session?.user?.id)
 		.returns<Weeks[]>();
 
@@ -28,10 +28,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		console.error('error', weeksError);
 	}
 
+	const currentWeek = differenceInWeeks(new Date(), new Date(profileData?.[0].dob as string));
+
 	return {
 		calendarStatus: profileData?.[0].calendar_initialized,
 		dob: profileData?.[0].dob,
 		weeks: weeksData,
+		currentWeek,
 		form: await superValidate(zod(formSchema))
 	};
 };
@@ -60,8 +63,7 @@ export const actions: Actions = {
 			const weeksRows = Array.from({ length: noWeeksSinceDOB }, (_, i) => ({
 				week_id: i + 1,
 				user_id: session?.user?.id,
-				status: 'checked',
-				can_check: false
+				status: 'checked'
 			}));
 
 			await supabase
