@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: weeksData, error: weeksError } = await supabase
 		.from('weeks')
-		.select('week_id, status')
+		.select('week_id, checked')
 		.eq('user_id', session?.user?.id)
 		.order('week_id', { ascending: true })
 		.returns<Weeks[]>();
@@ -64,7 +64,7 @@ export const actions: Actions = {
 			const weeksRows = Array.from({ length: noWeeksSinceDOB }, (_, i) => ({
 				week_id: i + 1,
 				user_id: session?.user?.id,
-				status: 'checked'
+				checked: true
 			}));
 
 			await supabase

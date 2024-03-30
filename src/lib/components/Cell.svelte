@@ -6,13 +6,14 @@
 	import { formatRFC7231, add } from 'date-fns';
 	import type { Weeks } from '../../global.types';
 	import { toNumber } from 'lodash-es';
+	import { CellOperations } from '@/services/cellOps';
 
 	export let week: Weeks | undefined = undefined;
 	export let idx: number | undefined = undefined;
 	export let currentWeek: number;
-	export let handleCheck: (id: number) => Promise<void> = async () => {};
 
-	const isChecked = week?.status === 'checked' ? true : false;
+	const { onCellCheck } = CellOperations();
+	let isChecked = week?.checked ? true : false;
 	const canCheck = week ? week.week_id === currentWeek : idx === currentWeek;
 	const currentDate = formatRFC7231(add(new Date(1999, 4, 1), { weeks: idx }));
 </script>
@@ -41,7 +42,12 @@
 			</Sheet.Description>
 		</Sheet.Header>
 		{#if canCheck}
-			<Checkbox on:click={() => handleCheck(toNumber(idx))} />
+			<Checkbox
+				bind:checked={isChecked}
+				on:click={() => {
+					onCellCheck(toNumber(idx || week?.week_id), week);
+				}}
+			/>
 		{/if}
 		<Notes />
 	</Sheet.Content>

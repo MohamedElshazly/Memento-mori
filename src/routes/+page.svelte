@@ -2,16 +2,11 @@
 	import Cell from '@/components/Cell.svelte';
 	import Birth from '@/components/Birth.svelte';
 	export let data;
-	let { supabase, calendarStatus, weeks, session, currentWeek } = data;
-	$: ({ supabase, calendarStatus, weeks, session, currentWeek } = data);
+	let { calendarStatus, weeks, currentWeek } = data;
+	$: ({ calendarStatus, weeks, currentWeek } = data);
 
 	const noOfWeeks = 3840;
 	const noWeeksSinceDOB = weeks?.length || 0;
-
-	const onCheck = async (week_id: number) => {
-		if (!session) return;
-		await supabase.from('weeks').insert([{ week_id, status: 'checked', user_id: session.user.id }]);
-	};
 </script>
 
 {#if calendarStatus}
@@ -28,7 +23,7 @@
 				{#if i < noWeeksSinceDOB}
 					<Cell week={weeks?.[i]} {currentWeek} />
 				{:else}
-					<Cell idx={i + 1} {currentWeek} handleCheck={(id) => onCheck(id)} />
+					<Cell idx={i + 1} {currentWeek} />
 				{/if}
 			{/each}
 		</div>
@@ -43,6 +38,5 @@
 			<p class="self-end">-Seneca</p>
 		</div>
 		<Birth data={data?.form} />
-		<!-- <Button variant="default" on:click={() => {}}>Generate Calendar</Button> -->
 	</div>
 {/if}

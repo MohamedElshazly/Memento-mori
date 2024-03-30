@@ -78,17 +78,17 @@ export type Database = {
       }
       weeks: {
         Row: {
-          status: string
+          checked: boolean | null
           user_id: string
           week_id: number
         }
         Insert: {
-          status: string
+          checked?: boolean | null
           user_id: string
           week_id?: number
         }
         Update: {
-          status?: string
+          checked?: boolean | null
           user_id?: string
           week_id?: number
         }
