@@ -6,12 +6,13 @@
 
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { redirect } from '@sveltejs/kit';
+	import { browser } from '$app/environment';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 
 	export let data;
 
-	let { supabase, session } = data;
-	$: ({ supabase, session } = data);
+	let { supabase, session, queryClient } = data;
+	$: ({ supabase, session, queryClient } = data);
 
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
@@ -28,8 +29,8 @@
 	<title>User Management</title>
 </svelte:head>
 
-<div class="">
+<QueryClientProvider client={queryClient}>
 	<ModeWatcher />
 	<Header />
 	<slot />
-</div>
+</QueryClientProvider>
