@@ -3,39 +3,11 @@ import { fail, type Actions } from '@sveltejs/kit';
 import { differenceInWeeks } from 'date-fns';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import type { Profile, Weeks } from '../global.types.js';
+
 import type { PageServerLoad } from './$types.js';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const { supabase } = locals;
-	const session = await locals.getSession();
-
-	const { data: profileData, error } = await supabase
-		.from('profiles')
-		.select('calendar_initialized, dob')
-		.returns<Profile[]>();
-
-	const { data: weeksData, error: weeksError } = await supabase
-		.from('weeks')
-		.select('week_id, checked')
-		.eq('user_id', session?.user?.id)
-		.order('week_id', { ascending: true })
-		.returns<Weeks[]>();
-
-	if (error) {
-		console.error('error', error);
-	}
-	if (weeksError) {
-		console.error('error', weeksError);
-	}
-
-	const currentWeek = differenceInWeeks(new Date(), new Date(profileData?.[0].dob as string));
-
+export const load: PageServerLoad = async () => {
 	return {
-		calendarStatus: profileData?.[0].calendar_initialized,
-		dob: profileData?.[0].dob,
-		weeks: weeksData,
-		currentWeek,
 		form: await superValidate(zod(formSchema))
 	};
 };
